@@ -35,9 +35,9 @@ def identify_service(port):
 # 서비스에 해당하는 취약점 목록 반환
 def find_vulnerabilities(service):
     vulnerabilities = {
-        "FTP": ["Allow service anonymous login", "Service password policy is weak"],
-        "SSH": ["Old SSH version", "Weak encryption algorithms"],
-        "HTTP": ["Missing security headers", "Outdated software"],
+        "FTP": ["Allow service anonymous login", "Service password policy is weak"], # FTP 서비스에 익명 로그인 허용 + 비밀번호 정책이 약함
+        "SSH": ["Old SSH version", "Weak encryption algorithms"], # 오래된 버전 + 암호와 알고리즘이 약함 + 보안에 취약한 서비스 사용 가능성
+        "HTTP": ["Missing security headers", "Outdated software"], # 응답 헤더에 보안 관련 헤더가 누락 + 웹서버. SW 버전이 오래되어 보안 업데이트 누락 가능성
     }
     return vulnerabilities.get(service, [])
 
@@ -69,8 +69,8 @@ def security_audit():
     return audit_results
 
 if __name__ == "__main__":
-    target_ip = "192.168.56.1"
-    port_range = range(1, 444)
+    target_ip = "192.168.56.1" # 사용하고자 하는 IP 
+    port_range = range(1, 444) # 포트 범위 (1~444)
     
     for port in port_range:
         response = syn_scan(target_ip, port)
