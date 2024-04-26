@@ -62,7 +62,7 @@ def http_banner_grabbing(tgtHost, portNum):
 
 # 메인 함수
 def main():
-    tgtHost = "192.168.219.108"
+    tgtHost = "ip"
 
     for portNum in range(1024):
         connection_lock.acquire()
