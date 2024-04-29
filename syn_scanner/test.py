@@ -13,9 +13,13 @@ port_result = {}
 
 # SYN 핵심기능
 def syn_scan(target_ip, port):
-    syn_packet = IP(dst=target_ip) / TCP(dport=port, flags='S')
-    response = sr1(syn_packet, timeout=2, verbose=0)
-    return response
+    connection_lock.acquire()
+    try:
+        syn_packet = IP(dst=target_ip) / TCP(dport=port, flags='S')
+        response = sr1(syn_packet, timeout=2, verbose=0)
+        return response
+    finally:
+        connection_lock.release()
 
 # 응답 분석 및 확인
 def check_port_status(response):
@@ -25,7 +29,7 @@ def check_port_status(response):
         elif response[TCP].flags == 0x14:  # RST-ACK
             return "closed"
     elif response and response.haslayer(ICMP):
-        return "filtered or host is unreachable"
+       return "filtered or host is unreachable"
     return "no response"
 
 # 서비스 이름 반환
@@ -78,34 +82,34 @@ def security_audit():
     }
     return audit_results
 
-# 스레드 함수
-def scan_port_thread(tgtHost, portNum):
-    try:
-        # SYN 패킷 생성
-        response = syn_scan(tgtHost, portNum)
-        
-        # 만약 응답이 SYN/ACK이면 포트는 열려있음을 의미
-        if response and response.haslayer(TCP) and response.getlayer(TCP).flags == 0x12:
-            with resultLock:
-                print("[+] Port {} opened".format(portNum))
-            port_result[portNum] = "Open"
-            
-    except Exception as e:
-        print("Error:", e)
-    finally:
-        connection_lock.release()
-
 # 메인 함수
 def main():
-    tgtHost = "127.0.0.1"
-
-    for portNum in range(1024):
-        connection_lock.acquire()
-        t = threading.Thread(target=scan_port_thread, args=(tgtHost, portNum))
-        t.start()
-    time.sleep(5)
-
-    print(port_result)
+    target_ip = "127.0.0.1" # 사용하고자 하는 IP 
+    port_range = range(1, 444) # 포트 범위 (1~444)
+    
+    for port in port_range:
+        response = syn_scan(target_ip, port)
+        port_status = check_port_status(response)
+        
+        print(f"Port {port} is {port_status}")
+        
+        if port_status == "open":
+            service = identify_service(port)
+            print(f"Service on port {port}: {service}")
+            
+            vulnerabilities = find_vulnerabilities(service)
+            if vulnerabilities:
+                print(f"Vulnerabilities: {', '.join(vulnerabilities)}")
+    
+    network_map = map_network(target_ip)
+    print("Network Map:")
+    for ip, status in network_map.items():
+        print(f"{ip} is {status}")
+    
+    audit_results = security_audit()
+    print("Security Audit Results:")
+    for item, result in audit_results.items():
+        print(f"{item}: {result}")
 
 if __name__ == "__main__":
     startTime = time.time()
