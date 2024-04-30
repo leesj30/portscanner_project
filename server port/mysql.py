@@ -20,6 +20,6 @@ def mysql_banner_grabbing(target_ip, port):
 
 target_ip = '222.114.120.236'
 
-mysql_port = 22
+mysql_port = 3306
 
 mysql_banner_grabbing(target_ip, mysql_port)
