@@ -30,36 +30,6 @@ def scanPort(tgtHost, portNum):
     finally:
         connection_lock.release()
 
-# 배너 그래빙 함수
-def grab_banner(tgtHost, portNum):
-    try:
-        banner = ""
-        # HTTP 서비스인 경우
-        if portNum == 80:
-            banner = http_banner_grabbing(tgtHost, portNum)
-        # 다른 서비스의 경우
-        else:
-            # 배너 그래빙을 위한 추가적인 처리
-            pass
-        
-        if banner:
-            print("[+] Banner for Port {}: {}".format(portNum, banner))
-    except Exception as e:
-        print("Error:", e)
-
-# HTTP 배너 그래빙 함수
-def http_banner_grabbing(tgtHost, portNum):
-    try:
-        banner = ""
-        # HTTP GET 요청을 보내고 서버 응답을 받음
-        response = sr1(IP(dst=tgtHost)/TCP(dport=portNum)/Raw(b"GET / HTTP/1.1\r\n\r\n"), timeout=2, verbose=False)
-        if response and response.haslayer(TCP) and response.haslayer(Raw):
-            banner = response[Raw].load.decode()
-        return banner
-    except Exception as e:
-        print("Error:", e)
-        return ""
-
 # 메인 함수
 def main():
     tgtHost = "ip"
