@@ -24,7 +24,9 @@ def scan_all(host):
         results,
         (ssh_banner_grabbing(host)),
         (ftp_banner_grabbing(host)),
-        (get_banner(host, [80, 443])),
+        (http_banner_grabbing(host)),
+        (https_banner_grabbing(host)),
+        #(get_banner(host, [80, 443])),
         (mysql_banner_grabbing(host))
     ]
     
