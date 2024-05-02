@@ -26,7 +26,7 @@
             color: #333;
         }
 
-        h3 {
+        h4 {
             color: #666;
             margin-top: 10px;
         }
@@ -54,7 +54,7 @@
         <div class="container">
             <h1>Port Scanner Result</h1>
             {% if target_ip %}
-                <h3>Entered IP : {{ target_ip }}</h3>
+                <h4>Entered IP : {{ target_ip }}</h4>
             {% endif %}
             <table>
                 <thread>
@@ -76,5 +76,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </br>
+            </br>   
+            <a href="{{url_for('vulner')}}">vulnerability</a>
+        </div>
     </body>
 </html>
