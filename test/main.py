@@ -19,9 +19,12 @@ def scan_all(host):
                         results.append(result)
             except Exception as e:
                 print(f"Error scanning port {portNum}: {e}")
+    
+    return results
 
-    portresults = [
-        results,
+def scan_serviceport(host):
+    
+    result = [
         (ssh_banner_grabbing(host)),
         (ftp_banner_grabbing(host)),
         (http_banner_grabbing(host)),
@@ -30,11 +33,12 @@ def scan_all(host):
         (mysql_banner_grabbing(host))
     ]
     
-    return portresults
+    return result
 
 if __name__ == "__main__":
     host = '127.0.0.1'
     startTime = time.time()
     scan_all(host)
+    scan_serviceport(host)
     endTime = time.time()
     print("Executed Time:", (endTime - startTime))
