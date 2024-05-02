@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify, json
-from main import scan_all
+from main import *
 
 app = Flask(__name__)
 
@@ -12,7 +12,8 @@ def results():
     if request.method == 'POST':
         tgtHost = request.form.get('ip')
         results = scan_all(tgtHost)
-        return render_template("results.html", tgtHost=tgtHost, results=results)
+        scan_results = scan_serviceport(tgtHost)
+        return render_template("results.html", tgtHost=tgtHost, results=results, result=scan_results)
     
 @app.route('/vulner')
 def vulner(): 

@@ -74,12 +74,12 @@
                     </tr>                
                 </thread>
                 <tbody>
-                    {% for result in results %}
+                    {% for scan_result in scan_results %}
                         <tr>
-                            <td>{{ result.port }}</td>
-                            <td>{{ result.status }}</td>
-                            <td>{{ result.service }}</td>
-                            <td>{{ result.banner }}</td>
+                            <td>{{ scan_result.port }}</td>
+                            <td>{{ scan_result.status }}</td>
+                            <td>{{ scan_result.service }}</td>
+                            <td>{{ scan_result.banner }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

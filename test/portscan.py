@@ -129,9 +129,10 @@ def http_banner_grabbing(host, port=80):
         
         # 딕셔너리 구성
         result = {
-            "status_code": status_code,
-            "status_message": status_message.decode(),
-            "headers": headers.decode()
+            "port":80,
+            "status": 'opened',
+            "service":'HTTP',
+            "banner": status_message.decode()
         }
         
         s.close()
