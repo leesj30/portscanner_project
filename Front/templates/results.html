@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Port Scan Result</title>
+        <style>
+            body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h3 {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Port Scanner Result</h1>
+            {% if target_ip %}
+                <h3>Entered IP : {{ target_ip }}</h3>
+            {% endif %}
+            <table>
+                <thread>
+                    <tr>
+                        <th>Port</th>
+                        <th>Status</th>
+                        <th>Service</th>
+                        <th>banner</th>
+                    </tr>                
+                </thread>
+                <tbody>
+                    {% for result in results %}
+                        <tr>
+                            <td>{{ result.port }}</td>
+                            <td>{{ result.status }}</td>
+                            <td>{{ result.service }}</td>
+                            <td>{{ result.banner }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </body>
+</html>
