@@ -1,25 +1,24 @@
 import socket
+import re
 
-def mysql_banner_grabbing(target_ip, port):
+def mysql_banner_grabbing(target_ip, port=3306):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(3)
 
         s.connect((target_ip, port))
-        s.send(b"GET / MYSQL/1.1\r\nHost: target_ip\r\n\r\n")
-
         banner = s.recv(1024).decode('utf-8').strip()
-        server_header = s.recv(1024).decode('utf-8').strip()
-
-        print(f"MySQL 서비스 배너 정보: {banner.splitlines()[0]}")
-        print(f"MySQL 서비스 서버 정보: {server_header}")
-
+        print(f"1: {banner}")
+        
+        mysql_version_match = re.search(r'version\s+(\S+)', banner)
+        if mysql_version_match:
+            mysql_version = mysql_version_match.group(1)
+            print(f"2: {mysql_version}")
+        else:
+            print("3")
+        
         s.close()
     except Exception as e:
-        print(f"MySQL 서비스에 연결하는 중 오류 발생: {e}")
+        print(f"4: {e}")
 
-target_ip = '222.114.120.236'
-
-mysql_port = 3306
-
-mysql_banner_grabbing(target_ip, mysql_port)
+mysql_banner_grabbing('127.0.0.1')
