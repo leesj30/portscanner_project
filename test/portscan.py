@@ -1,6 +1,8 @@
 import threading
-from scapy.all import *
+from scapy.all import IP, TCP, sr1
 import time
+import socket
+import re
 import nmap
 
 
