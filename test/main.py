@@ -19,8 +19,16 @@ def scan_all(host):
                         results.append(result)
             except Exception as e:
                 print(f"Error scanning port {portNum}: {e}")
-                
-    return results
+
+    portresults = [
+        results,
+        (ssh_banner_grabbing(host)),
+        (ftp_banner_grabbing(host)),
+        (get_banner(host, [80, 443])),
+        (mysql_banner_grabbing(host))
+    ]
+    
+    return portresults
 
 if __name__ == "__main__":
     host = '127.0.0.1'
