@@ -1,8 +1,4 @@
-import threading
-from scapy.all import IP, TCP, sr1
-import time
-import socket
-import re
+from scapy.all import *
 import nmap
 
 
@@ -21,6 +17,7 @@ def scanPort(tgtHost, portNum):
     except Exception as e:
         print("Error:", e)
         
+    # 포트가 열려있지 않는 경우 빈 딕셔너리 반환
     return port_result if port_result else None
 
 def ssh_banner_grabbing(target_ip, port=22):
@@ -74,10 +71,10 @@ def ftp_banner_grabbing(target_ip, port=21):
     
     return result
 
-def get_banner(ip, ports):
+def get_banner(ip, port):
     banner_info = {}
     nm = nmap.PortScanner()
-    nm.scan(hosts=ip, ports=','.join(str(p) for p in ports), arguments='-sV')
+    nm.scan(hosts=ip, ports=','.join(str(p) for p in port), arguments='-sV')
     
     for host in nm.all_hosts():
         banner_info[host] = {}
