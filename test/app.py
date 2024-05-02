@@ -12,8 +12,8 @@ def results():
     if request.method == 'POST':
         tgtHost = request.form.get('ip')
         results = scan_all(tgtHost)
-        scan_results = scan_serviceport(tgtHost)
-        return render_template("results.html", tgtHost=tgtHost, results=results, result=scan_results)
+        result = scan_serviceport(tgtHost)
+        return render_template("results.html", tgtHost=tgtHost, results=results, result=result)
     
 @app.route('/vulner')
 def vulner(): 
