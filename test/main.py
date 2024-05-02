@@ -14,11 +14,12 @@ def scan_all(host):
             portNum = futures[future]
             try:
                 result = future.result()
-                with resultLock:
-                    results.append(result)
+                if result is not None:  # 포트가 열려 있을 때만 결과를 수집
+                    with resultLock:
+                        results.append(result)
             except Exception as e:
                 print(f"Error scanning port {portNum}: {e}")
-
+                
     return results
 
 if __name__ == "__main__":
