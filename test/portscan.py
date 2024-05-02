@@ -21,7 +21,7 @@ def scanPort(tgtHost, portNum):
     except Exception as e:
         print("Error:", e)
         
-    return port_result
+    return port_result if port_result else None
 
 def ssh_banner_grabbing(target_ip, port=22):
     try:
