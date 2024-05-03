@@ -3,14 +3,14 @@ import nmap
 import ssl
 
 
-# ìŠ¤ë ˆë“œ í•¨ìˆ˜
+# ½º·¹µå ÇÔ¼ö
 def scanPort(tgtHost, portNum):
     try:
         port_result = {}
-        # SYN íŒ¨í‚· ìƒì„±
+        # SYN ÆĞÅ¶ »ı¼º
         response = sr1(IP(dst=tgtHost)/TCP(dport=portNum, flags="S"), timeout=2, verbose=False)
         
-        # ë§Œì•½ ì‘ë‹µì´ SYN/ACKì´ë©´ í¬íŠ¸ëŠ” ì—´ë ¤ìˆìŒì„ ì˜ë¯¸
+        # ¸¸¾à ÀÀ´äÀÌ SYN/ACKÀÌ¸é Æ÷Æ®´Â ¿­·ÁÀÖÀ½À» ÀÇ¹Ì
         if response and response.haslayer(TCP) and response.getlayer(TCP).flags == 0x12:
             print("[+] Port {} opened".format(portNum))
             port_result[portNum] = "Open"
@@ -18,71 +18,57 @@ def scanPort(tgtHost, portNum):
     except Exception as e:
         print("Error:", e)
         
-    # í¬íŠ¸ê°€ ì—´ë ¤ìˆì§€ ì•ŠëŠ” ê²½ìš° ë¹ˆ ë”•ì…”ë„ˆë¦¬ ë°˜í™˜
+    # Æ÷Æ®°¡ ¿­·ÁÀÖÁö ¾Ê´Â °æ¿ì ºó µñ¼Å³Ê¸® ¹İÈ¯
     return port_result if port_result else None
 
 def ssh_banner_grabbing(target_ip, port=22):
-    result = {}
     try:
-        # ì†Œì¼“ ê°ì²´ ìƒì„±
+        # ¼ÒÄÏ °´Ã¼ »ı¼º
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(3)  # ì†Œì¼“ íƒ€ì„ì•„ì›ƒ ì„¤ì • (ì´ˆ ë‹¨ìœ„)
+        s.settimeout(3)  # ¼ÒÄÏ Å¸ÀÓ¾Æ¿ô ¼³Á¤ (ÃÊ ´ÜÀ§)
 
-        # SSH ì„œë¹„ìŠ¤ì— ì—°ê²° ì‹œë„
+        # SSH ¼­ºñ½º¿¡ ¿¬°á ½Ãµµ
         s.connect((target_ip, port))
         banner = s.recv(1024).decode('utf-8').strip()
-
-        result = {
-            "port":22,
-            "status": 'opened',
-            "service":'SSH',
-            "banner": banner
-        }
         
-        
-        # ë°°ë„ˆì—ì„œ SSH ë²„ì „ ì¶”ì¶œ
+        # ¹è³Ê¿¡¼­ SSH ¹öÀü ÃßÃâ
         ssh_version_match = re.search(r'SSH-(\d+\.\d+)', banner)
         if ssh_version_match:
             ssh_version = ssh_version_match.group(1)
             s.close()
-            return {"banner": banner, "version": ssh_version}  # ë”•ì…”ë„ˆë¦¬ë¡œ ë°°ë„ˆ ì •ë³´ì™€ ë²„ì „ì„ ë°˜í™˜
+            return {"banner": banner, "version": ssh_version}  # µñ¼Å³Ê¸®·Î ¹è³Ê Á¤º¸¿Í ¹öÀüÀ» ¹İÈ¯
         else:
             s.close()
-            return {"banner": banner, "version": None}  # ë²„ì „ì„ ì°¾ì„ ìˆ˜ ì—†ëŠ” ê²½ìš° None ë°˜í™˜
+            return {"banner": banner, "version": None}  # ¹öÀüÀ» Ã£À» ¼ö ¾ø´Â °æ¿ì None ¹İÈ¯
         
     except Exception as e:
-        return {"error": f"SSH ì„œë¹„ìŠ¤ì— ì—°ê²°í•˜ëŠ” ì¤‘ ì˜¤ë¥˜ ë°œìƒ: {e}"}  # ì˜¤ë¥˜ê°€ ë°œìƒí•œ ê²½ìš° ì˜¤ë¥˜ ë©”ì‹œì§€ë¥¼ ë”•ì…”ë„ˆë¦¬ë¡œ ë°˜í™˜
+        return {"error": f"SSH ¼­ºñ½º¿¡ ¿¬°áÇÏ´Â Áß ¿À·ù ¹ß»ı: {e}"}  # ¿À·ù°¡ ¹ß»ıÇÑ °æ¿ì ¿À·ù ¸Ş½ÃÁö¸¦ µñ¼Å³Ê¸®·Î ¹İÈ¯
 
 def ftp_banner_grabbing(target_ip, port=21):
-    result = {}
+    result = {"banner": None, "version": None, "error": None}
     try:
-        # ì†Œì¼“ ê°ì²´ ìƒì„±
+        # ¼ÒÄÏ °´Ã¼ »ı¼º
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(3)  # ì†Œì¼“ íƒ€ì„ì•„ì›ƒ ì„¤ì • (ì´ˆ ë‹¨ìœ„)
+        s.settimeout(3)  # ¼ÒÄÏ Å¸ÀÓ¾Æ¿ô ¼³Á¤ (ÃÊ ´ÜÀ§)
 
-        # FTP ì„œë¹„ìŠ¤ì— ì—°ê²° ì‹œë„
+        # FTP ¼­ºñ½º¿¡ ¿¬°á ½Ãµµ
         s.connect((target_ip, port))
         banner = s.recv(1024).decode('utf-8').strip()
         
-        result = {
-            "port":21,
-            "status": 'opened',
-            "service":'FTP',
-            "banner": banner
-        }
+        # FTP ¼­ºñ½º ¹è³Ê Á¤º¸ ÀúÀå
+        result["banner"] = banner
         
-        
-        # ë°°ë„ˆì—ì„œ FTP ë²„ì „ ì¶”ì¶œ
+        # ¹è³Ê¿¡¼­ FTP ¹öÀü ÃßÃâ
         ftp_version_match = re.search(r'FTP\s+([^\s]+)', banner)
         if ftp_version_match:
             ftp_version = ftp_version_match.group(1)
             result["version"] = ftp_version
         else:
-            result["version"] = "Unknown"  # ë²„ì „ì„ ì°¾ì„ ìˆ˜ ì—†ëŠ” ê²½ìš° Unknownìœ¼ë¡œ í‘œì‹œ
+            result["version"] = "Unknown"  # ¹öÀüÀ» Ã£À» ¼ö ¾ø´Â °æ¿ì UnknownÀ¸·Î Ç¥½Ã
         
         s.close()
     except Exception as e:
-        result["error"] = f"FTP ì„œë¹„ìŠ¤ì— ì—°ê²°í•˜ëŠ” ì¤‘ ì˜¤ë¥˜ ë°œìƒ: {e}"  # ì˜¤ë¥˜ê°€ ë°œìƒí•œ ê²½ìš° ì˜¤ë¥˜ ë©”ì‹œì§€ ì €ì¥
+        result["error"] = f"FTP ¼­ºñ½º¿¡ ¿¬°áÇÏ´Â Áß ¿À·ù ¹ß»ı: {e}"  # ¿À·ù°¡ ¹ß»ıÇÑ °æ¿ì ¿À·ù ¸Ş½ÃÁö ÀúÀå
     
     return result
 
@@ -110,14 +96,7 @@ def mysql_banner_grabbing(target_ip, port=3306):
 
         s.connect((target_ip, port))
         banner = s.recv(1024).decode('utf-8').strip()
-
-        result = {
-            "port":3306,
-            "status": 'opened',
-            "service":'MySQL',
-            "banner": banner
-        }
-        
+        result["banner"] = banner
         
         mysql_version_match = re.search(r'version\s+(\S+)', banner)
         if mysql_version_match:
@@ -136,17 +115,24 @@ def http_banner_grabbing(host, port=80):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
-
-        s.send(b"GET / HTTP/1.0\r\nHost: example.com\r\n\r\n")
-        banner = s.recv(1024).decode('utf-8').strip()
-        print(f"1: {banner}")
         
-        # ë”•ì…”ë„ˆë¦¬ êµ¬ì„±
+        request = b"GET / HTTP/1.1\r\nHost: " + host.encode() + b"\r\n\r\n"
+        s.send(request)
+        
+        response = s.recv(4096)
+
+        status_line = response.split(b"\r\n")[0]
+        status_code = status_line.split()[1]
+        status_message = status_line.split(maxsplit=2)[2]
+        
+        headers = response.split(b"\r\n\r\n")[0]
+        
+        # µñ¼Å³Ê¸® ±¸¼º
         result = {
             "port":80,
             "status": 'opened',
             "service":'HTTP',
-            "banner": banner
+            "banner": status_message.decode()
         }
         
         s.close()
@@ -156,20 +142,34 @@ def http_banner_grabbing(host, port=80):
 
 def https_banner_grabbing(host, port=443):
     try:
-        context = ssl.create_default_context()
-        with socket.create_connection((host, port)) as s:
-            with context.wrap_socket(s, server_hostname=host) as sock:
-                sock.send(b"GET / HTTPS/1.1\r\nHost: "+ host.encode() + b"\r\n\r\n")
-                banner = sock.recv(1024).decode('utf-8').strip()
-                print(f"1: {banner}")
-
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
+        
+        ssl_socket = ssl.wrap_socket(s)
+        
+        request = b"GET / HTTPS/1.1\r\nHost: " + host.encode() + b"\r\n\r\n"
+        ssl_socket.send(request)
+        
+        response = ssl_socket.recv(4096)
+        
+        status_line = response.split(b"\r\n")[0]
+        status_code = status_line.split()[1]
+        status_message = status_line.split(maxsplit=2)[2]
+        
+        headers = response.split(b"\r\n\r\n")[0]
+        
+        # µñ¼Å³Ê¸® ±¸¼º
         result = {
-            "port": 443,
-            "status": 'opened',
-            "service": 'HTTPS',
-            "banner": banner
+            "status_code": status_code,
+            "status_message": status_message.decode(),
+            "headers": headers.decode()
         }
-
+        
+        ssl_socket.close()
         return result
     except Exception as e:
         return {"error": str(e)}
+
+        result["error"] = str(e)
+    
+    return result

@@ -36,7 +36,7 @@ def scan_serviceport(host):
     return result
 
 if __name__ == "__main__":
-    host = '127.0.0.1'
+    host = '61.42.156.121'
     startTime = time.time()
     scan_all(host)
     scan_serviceport(host)
