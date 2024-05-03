@@ -1,7 +1,5 @@
-from flask import Flask, request, render_template, jsonify, json
-from final import main
-from pymongo import MongoClient
-from final.cvedb import *
+from flask import Flask, request, render_template
+from main import *
 
 app = Flask(__name__)
 
@@ -13,22 +11,14 @@ def index():
 def results():
     if request.method == 'POST':
         tgtHost = request.form.get('ip')
-        results = main(tgtHost)
-        return render_template("results.html", tgtHost=tgtHost, results=results)
+        results = scan_all(tgtHost)
+        result = scan_serviceport(tgtHost)
+        return render_template("results.html", tgtHost=tgtHost, results=results, result=result)
     
 @app.route('/vulner')
 def vulner(): 
     return render_template("vulner.html")
 
-@app.route('/search', methods=['POST'])
-def search():
-    keyword = request.json['keyword']
-    results = search_data(keyword)
-    html_results = '<ul>'
-    for result in results:
-        html_results += '<li>' + json.dumps(result) + '</li>'
-    html_results += '</ul>'
-    return jsonify(html_results)
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
