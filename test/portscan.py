@@ -118,7 +118,6 @@ def mysql_banner_grabbing(target_ip, port=3306):
             "banner": banner
         }
         
-        
         mysql_version_match = re.search(r'version\s+(\S+)', banner)
         if mysql_version_match:
             mysql_version = mysql_version_match.group(1)
@@ -159,7 +158,7 @@ def https_banner_grabbing(host, port=443):
         context = ssl.create_default_context()
         with socket.create_connection((host, port)) as s:
             with context.wrap_socket(s, server_hostname=host) as sock:
-                sock.send(b"GET / HTTPS/1.1\r\nHost: "+ host.encode() + b"\r\n\r\n")
+                sock.send(b"GET / HTTP/1.1\r\nHost: "+ host.encode() + b"\r\n\r\n")
                 banner = sock.recv(1024).decode('utf-8').strip()
                 print(f"1: {banner}")
 
