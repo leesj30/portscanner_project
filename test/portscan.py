@@ -22,7 +22,10 @@ def scanPort(tgtHost, portNum):
     return port_result if port_result else None
 
 def ssh_banner_grabbing(target_ip, port=22):
-    result = {}
+    result = {"port":22,
+            "status": 'closed',
+            "service":'SSH',
+            "banner": None}
     try:
         # 소켓 객체 생성
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,7 +42,6 @@ def ssh_banner_grabbing(target_ip, port=22):
             "banner": banner
         }
         
-        
         # 배너에서 SSH 버전 추출
         ssh_version_match = re.search(r'SSH-(\d+\.\d+)', banner)
         if ssh_version_match:
@@ -51,10 +53,15 @@ def ssh_banner_grabbing(target_ip, port=22):
             return {"banner": banner, "version": None}  # 버전을 찾을 수 없는 경우 None 반환
         
     except Exception as e:
-        return {"error": f"SSH 서비스에 연결하는 중 오류 발생: {e}"}  # 오류가 발생한 경우 오류 메시지를 딕셔너리로 반환
-
+        result["status"] = 'error'
+        result["banner"] = f"error: {e}"
+        return result
+    
 def ftp_banner_grabbing(target_ip, port=21):
-    result = {}
+    result = {"port":21,
+            "status": 'closed',
+            "service":'FTP',
+            "banner": None}
     try:
         # 소켓 객체 생성
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,19 +78,19 @@ def ftp_banner_grabbing(target_ip, port=21):
             "banner": banner
         }
         
-        
         # 배너에서 FTP 버전 추출
         ftp_version_match = re.search(r'FTP\s+([^\s]+)', banner)
         if ftp_version_match:
             ftp_version = ftp_version_match.group(1)
             result["version"] = ftp_version
+            s.close()
         else:
             result["version"] = "Unknown"  # 버전을 찾을 수 없는 경우 Unknown으로 표시
+            s.close()
         
-        s.close()
     except Exception as e:
-        result["error"] = f"FTP 서비스에 연결하는 중 오류 발생: {e}"  # 오류가 발생한 경우 오류 메시지 저장
-    
+        result["status"] = 'error'
+        result["banner"] = f"error: {e}"
     return result
 
 def get_banner(ip, port):
@@ -103,7 +110,10 @@ def get_banner(ip, port):
 
 
 def mysql_banner_grabbing(target_ip, port=3306):
-    result = {}
+    result = {"port":3306,
+            "status": 'closed',
+            "service":'MySQL',
+            "banner": None}
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(3)
@@ -124,14 +134,20 @@ def mysql_banner_grabbing(target_ip, port=3306):
             result["version"] = mysql_version
         else:
             result["version"] = None
-        
         s.close()
+
     except Exception as e:
-        result["error"] = str(e)
-    
+         result["status"] = 'error'
+         result["banner"] = f"error: {e}"
     return result
 
 def http_banner_grabbing(host, port=80):
+    result = {
+            "port":80,
+            "status": 'closed',
+            "service":'HTTP',
+            "banner": None
+        }
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
@@ -147,13 +163,21 @@ def http_banner_grabbing(host, port=80):
             "service":'HTTP',
             "banner": banner
         }
-        
         s.close()
         return result
+    
     except Exception as e:
-        return {"error": str(e)}
+        result["status"] = 'error'
+        result["banner"] = f"error: {e}"
+        return result
 
 def https_banner_grabbing(host, port=443):
+    result = {
+            "port":443,
+            "status": 'closed',
+            "service":'HTTPS',
+            "banner": None
+        }
     try:
         context = ssl.create_default_context()
         with socket.create_connection((host, port)) as s:
@@ -168,7 +192,9 @@ def https_banner_grabbing(host, port=443):
             "service": 'HTTPS',
             "banner": banner
         }
-
         return result
+    
     except Exception as e:
-        return {"error": str(e)}
+        result["status"] = 'error'
+        result["banner"] = f"error: {e}"
+        return result

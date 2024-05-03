@@ -32,11 +32,11 @@ def scan_serviceport(host):
         #(get_banner(host, [80, 443])),
         (mysql_banner_grabbing(host))
     ]
-    
+
     return result
 
 if __name__ == "__main__":
-    host = '61.42.156.121'
+    host = '127.0.0.1'
     startTime = time.time()
     scan_all(host)
     scan_serviceport(host)
