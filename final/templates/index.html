@@ -55,6 +55,17 @@
             button:hover {
                 background-color: #0056b3;
             }
+
+            a {
+                text-decoration: none;
+                color: #007bff;
+                font-size: 20px;
+                padding: 5px 10px;
+            }
+
+            a:hover {
+                color: #0056b3;
+            }
         </style>
     </head>
     <body>
@@ -65,6 +76,9 @@
                 <input type="text" id="ip" name="ip" placeholder="Enter IP address">
                 <button type="submit">Scan</button>
             </form>
+
+            </br>   
+            <a href="{{url_for('vulner')}}">Search Vulnerability</a>
         </div>
     </body>
 </html>

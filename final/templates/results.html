@@ -52,6 +52,17 @@
             background-color: #f2f2f2;
         }
 
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 20px;
+            padding: 5px 10px;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
         </style>
     </head>
     <body>
@@ -74,19 +85,19 @@
                     </tr>                
                 </thread>
                 <tbody>
-                    {% for result in results %}
+                    {% for scan_result in result %}
                         <tr>
-                            <td>{{ result.port }}</td>
-                            <td>{{ result.status }}</td>
-                            <td>{{ result.service }}</td>
-                            <td>{{ result.banner }}</td>
+                            <td>{{ scan_result.port }}</td>
+                            <td>{{ scan_result.status }}</td>
+                            <td>{{ scan_result.service }}</td>
+                            <td>{{ scan_result.banner }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
             </br>
             </br>   
-            <a href="{{url_for('vulner')}}">vulnerability</a>
+            <a href="{{url_for('vulner')}}">Search Vulnerability</a>
         </div>
     </body>
 </html>
